@@ -1,8 +1,9 @@
 """
 Submodule for implementing the different linear solver methods. These are the direct methods.
 """
+from typing import Union, List, Tuple, Iterable
+
 import numpy as np
-from typing import Union, List, Tuple
 
 
 def gauss_solve(A: Union[np.array, List], b: Union[np.array, List]) -> np.array:
@@ -84,6 +85,46 @@ def choleski_solve(L: Union[np.ndarray, List], b: Union[np.ndarray, List]) -> np
     # Solution of [L_transpose]{x} = {y}
     for k in range(n - 1, -1, -1):
         b[k] = (b[k] - np.dot(L[k + 1:n, k], b[k + 1:n]))/L[k, k]
+    return b
+
+
+def lu_decomposition3(c: Iterable, d: Iterable, e: Iterable):
+    """
+    Performs the LU decomposition of a tridiagonal matrix. More details can be seen on page 60 of the book in the
+    readme.
+
+    :param c: Array of the lower diagonal
+    :param d: Array of the diagonal
+    :param e: Array of the upper diagonal
+    :return: c, d, e --> The diagonals of the decomposed matrix
+    """
+    c, d, e = _handle_arrays(c, d, e)
+    n = len(d)
+    for k in range(1, n):
+        lam = c[k - 1]/d[k - 1]
+        d[k] = d[k] - lam*e[k - 1]
+        c[k - 1] = lam
+    return c, d, e
+
+
+def lu_solve3(c: Union[List, np.ndarray], d: Union[List, np.ndarray], e: Union[List, np.ndarray],
+              b: Union[List, np.ndarray]):
+    """
+    Solves the solution Ax=b where c, d, and e are the vectors returned from lu_decomposition3.
+
+    :param c: c vector from lu_decomposition3
+    :param d: d vector from lu_decomposition3
+    :param e: e vector from lu_decomposition3
+    :param b: Solution vector
+    :return: The solution x to Ax=b
+    """
+    b = _handle_arrays(b)
+    n = len(d)
+    for k in range(1, n):
+        b[k] = b[k] - c[k - 1]*b[k - 1]
+    b[n - 1] = b[n - 1]/d[n - 1]
+    for k in range(n - 2, -1, -1):
+        b[k] = (b[k] - e[k]*b[k + 1])/d[k]
     return b
 
 
