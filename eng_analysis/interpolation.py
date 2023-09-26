@@ -69,6 +69,10 @@ class CubicSpline:
         return k
 
     def __call__(self, x: Union[List, np.ndarray, int, float]):
+
+        if isinstance(x, List) or isinstance(x, np.ndarray):
+            return np.array(list(map(self, x)), dtype=np.float64)
+
         i = _find_segment(self.x, x)
         h = self.x[i] - self.x[i + 1]
         y = ((x - self.x[i + 1])**3/h - (x - self.x[i + 1])*h)*self.curvatures[i]/6.0 - (
