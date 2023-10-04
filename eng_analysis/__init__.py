@@ -2,6 +2,7 @@ from .linear_solvers import gauss_solve, choleski_decomposition, choleski_solve,
 from .iterative_solvers import conj_grad
 from .interpolation import NewtonPoly, CubicSpline
 from .roots import newton_raphson
+from .integration import romberg
 
 __all__ = [
     'gauss_solve',
@@ -12,5 +13,6 @@ __all__ = [
     'conj_grad',
     'NewtonPoly',
     'CubicSpline',
-    'newton_raphson'
+    'newton_raphson',
+    'romberg'
 ]
