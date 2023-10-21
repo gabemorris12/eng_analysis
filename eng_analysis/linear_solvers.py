@@ -5,6 +5,8 @@ from typing import Union, List, Tuple, Iterable
 
 import numpy as np
 
+from ._handler import handle_arrays
+
 
 def gauss_solve(A: Union[np.array, List], b: Union[np.array, List]) -> np.array:
     """
@@ -15,7 +17,7 @@ def gauss_solve(A: Union[np.array, List], b: Union[np.array, List]) -> np.array:
     :param b: Solution vector
     :return: The solution x of the linear system
     """
-    A, b = _handle_arrays(A, b)
+    A, b = handle_arrays(A, b)
     n = len(b)
 
     # Set up scale factors
@@ -56,7 +58,7 @@ def choleski_decomposition(A: Union[np.ndarray, List]) -> np.array:
     :param A: Matrix of coefficients
     :return: L, the choleski decomposition of A
     """
-    A = _handle_arrays(A)
+    A = handle_arrays(A)
     n = len(A)
     for k in range(n):
         value = A[k, k] - np.dot(A[k, 0:k], A[k, 0:k])
@@ -77,7 +79,7 @@ def choleski_solve(L: Union[np.ndarray, List], b: Union[np.ndarray, List]) -> np
     :param b: Solution vector
     :return: The solution x of the linear system
     """
-    L, b = _handle_arrays(L, b)
+    L, b = handle_arrays(L, b)
     n = len(b)
     # Solution of [L]{y} = {b}
     for k in range(n):
@@ -98,7 +100,7 @@ def lu_decomposition3(c: Iterable, d: Iterable, e: Iterable):
     :param e: Array of the upper diagonal
     :return: c, d, e --> The diagonals of the decomposed matrix
     """
-    c, d, e = _handle_arrays(c, d, e)
+    c, d, e = handle_arrays(c, d, e)
     n = len(d)
     for k in range(1, n):
         lam = c[k - 1]/d[k - 1]
@@ -118,7 +120,7 @@ def lu_solve3(c: Union[List, np.ndarray], d: Union[List, np.ndarray], e: Union[L
     :param b: Solution vector
     :return: The solution x to Ax=b
     """
-    b = _handle_arrays(b)
+    b = handle_arrays(b)
     n = len(d)
     for k in range(1, n):
         b[k] = b[k] - c[k - 1]*b[k - 1]
@@ -136,7 +138,7 @@ def lu_decomposition(A: Union[np.array, List]) -> Tuple[np.array, np.array]:
     :return: LU, seq where LU contains U in the upper triangle portion and the non-diagonal terms of L in the lower
              triangle. The permutations are recorded in the vector "seq."
     """
-    A = _handle_arrays(A)
+    A = handle_arrays(A)
     n = len(A)
     seq = np.arange(n)
 
@@ -173,7 +175,7 @@ def lu_solve(LU: Union[np.array, List], b: Union[np.array, List], seq: Union[np.
     :param seq: The recorded permutations from lu_decomposition
     :return: The solution x of the linear system
     """
-    LU, b = _handle_arrays(LU, b)
+    LU, b = handle_arrays(LU, b)
     n = len(LU)
 
     # Rearrange constant vector; store it in [x]
@@ -188,19 +190,6 @@ def lu_solve(LU: Union[np.array, List], b: Union[np.array, List], seq: Union[np.
     for k in range(n - 2, -1, -1):
         x[k] = (x[k] - np.dot(LU[k, k + 1:n], x[k + 1:n]))/LU[k, k]
     return x
-
-
-def _handle_arrays(*args):
-    """
-    Makes sure that copies and numpy arrays with np.float64 datatypes are being used.
-
-    :param args: Numpy arrays or lists to be handled
-    :return: A list of copies of numpy arrays in args with np.float64 datatype
-    """
-    if len(args) > 1:
-        return [np.array(item_, dtype=np.float64, copy=True) for item_ in args]
-    else:
-        return np.array(args, dtype=np.float64, copy=True)[0]
 
 
 def _row_interchange(v, i, j):

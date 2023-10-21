@@ -6,6 +6,7 @@ from typing import Iterable, Union, List
 import numpy as np
 
 from .linear_solvers import lu_decomposition3, lu_solve3
+from ._handler import handle_arrays
 
 
 class NewtonPoly:
@@ -20,7 +21,7 @@ class NewtonPoly:
         - coefficients: The coefficients (a) of the polynomial in the form of a0 + (x − x0)a1 + (x − x0)(x − x1)a2 +···+
                         (x − x0)(x − x1)···(x − x_n−1)a_n
         """
-        self.x, self.y = _handle_arrays(x, y)
+        self.x, self.y = handle_arrays(x, y)
         self.coefficients = self._get_coefficients()
 
     def _get_coefficients(self):
@@ -31,7 +32,7 @@ class NewtonPoly:
         return a
 
     def __call__(self, x: Iterable | int | float) -> np.array:
-        x = _handle_arrays(x)
+        x = handle_arrays(x)
         n = len(self.x) - 1  # Degree of polynomial
         p = self.coefficients[n]
         for k in range(1, n + 1):
@@ -50,7 +51,7 @@ class CubicSpline:
         Attributes:
         - curvatures: The curvatures of the cubic spline at its knots.
         """
-        self.x, self.y = _handle_arrays(x, y)
+        self.x, self.y = handle_arrays(x, y)
         self.curvatures = self._curvatures()
 
     def _curvatures(self):
@@ -79,19 +80,6 @@ class CubicSpline:
                     (x - self.x[i])**3/h - (x - self.x[i])*h)*self.curvatures[i + 1]/6.0 + (
                         self.y[i]*(x - self.x[i + 1]) - self.y[i + 1]*(x - self.x[i]))/h
         return y
-
-
-def _handle_arrays(*args):
-    """
-    Makes sure that copies and numpy arrays with np.float64 datatypes are being used.
-
-    :param args: Numpy arrays or lists to be handled
-    :return: A list of copies of numpy arrays in args with np.float64 datatype
-    """
-    if len(args) > 1:
-        return [np.array(item_, dtype=np.float64, copy=True) for item_ in args]
-    else:
-        return np.array(args, dtype=np.float64, copy=True)[0]
 
 
 def _find_segment(x_data, x):
