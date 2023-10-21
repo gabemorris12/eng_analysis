@@ -5,6 +5,8 @@ Submodule for implementing the different linear solver methods. These are the in
 import numpy as np
 from typing import Tuple, Callable, Iterable
 
+from ._handler import handle_arrays
+
 
 def conj_grad(Av: Callable, x: Iterable, b: Iterable, tol=1.0e-9) -> Tuple[np.array, int]:
     """
@@ -16,7 +18,7 @@ def conj_grad(Av: Callable, x: Iterable, b: Iterable, tol=1.0e-9) -> Tuple[np.ar
     :param tol: Error tolerance
     :return:
     """
-    b = _handle_arrays(b)
+    b = handle_arrays(b)
     n = len(b)
     r = b - Av(x)
     s = r.copy()
@@ -35,16 +37,3 @@ def conj_grad(Av: Callable, x: Iterable, b: Iterable, tol=1.0e-9) -> Tuple[np.ar
 
     # noinspection PyUnboundLocalVariable
     return x, i
-
-
-def _handle_arrays(*args):
-    """
-    Makes sure that copies and numpy arrays with np.float64 datatypes are being used.
-
-    :param args: Numpy arrays or lists to be handled
-    :return: A list of copies of numpy arrays in args with np.float64 datatype
-    """
-    if len(args) > 1:
-        return [np.array(item_, dtype=np.float64, copy=True) for item_ in args]
-    else:
-        return np.array(args, dtype=np.float64, copy=True)[0]

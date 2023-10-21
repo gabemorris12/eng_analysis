@@ -6,6 +6,7 @@ from typing import Callable, Iterable
 import numpy as np
 
 from .linear_solvers import gauss_solve
+from ._handler import handle_arrays
 
 
 def newton_raphson(f: Callable, x: Iterable, tol=1.0e-9, max_iter=30):
@@ -20,7 +21,7 @@ def newton_raphson(f: Callable, x: Iterable, tol=1.0e-9, max_iter=30):
                      iterative process will max out at a value of max_iter and a TooManyIterations error will occur.
     :return:
     """
-    x = _handle_arrays(x)
+    x = handle_arrays(x)
     i = 0
     while True:
         jac, f0 = _jacobian(f, x)
@@ -49,16 +50,3 @@ def _jacobian(f, x):
 
 class TooManyIterations(Exception):
     pass
-
-
-def _handle_arrays(*args):
-    """
-    Makes sure that copies and numpy arrays with np.float64 datatypes are being used.
-
-    :param args: Numpy arrays or lists to be handled
-    :return: A list of copies of numpy arrays in args with np.float64 datatype
-    """
-    if len(args) > 1:
-        return [np.array(item_, dtype=np.float64, copy=True) for item_ in args]
-    else:
-        return np.array(args, dtype=np.float64, copy=True)[0]
