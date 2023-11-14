@@ -4,6 +4,8 @@ from .interpolation import NewtonPoly, CubicSpline
 from .roots import newton_raphson
 from .integration import romberg, gauss_legendre2
 from .ivp import runge_kutta
+from .bvp import bol_stoer
+from .eigen import jacobi
 
 __all__ = [
     'gauss_solve',
@@ -17,5 +19,7 @@ __all__ = [
     'newton_raphson',
     'romberg',
     'gauss_legendre2',
-    'runge_kutta'
+    'runge_kutta',
+    'bol_stoer',
+    'jacobi'
 ]
