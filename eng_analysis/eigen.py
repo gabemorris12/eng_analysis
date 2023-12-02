@@ -51,6 +51,7 @@ def _rotate(a, p, k, l):  # Rotate to make a[k,l] = 0
         p[i, l] = p[i, l] + s*(temp - tau*p[i, l])
 
 
+# Todo: I think this needs some work. Ensure that this works properly, then add docs.
 def jacobi(a: List | Iterable, tol=1.0e-8):
     a = handle_arrays(a)
     n = len(a)
